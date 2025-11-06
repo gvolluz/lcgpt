@@ -85,3 +85,6 @@ out/
 
 # Local saved conversations
 conversations/
+
+# Local models cache
+models_cache.json

@@ -14,7 +14,10 @@
         <span class="brand-name">LCGPT</span>
       </div>
       <div class="status">
-        <span id="healthStatus" class="badge">Checking…</span>
+        <span id="rateStatus" class="badge" title="Current API rate limits" style="margin-right:8px; display:none;">Limits: …</span>
+        <span id="usageStatus" class="badge" title="Token usage in this session" style="margin-right:8px; display:none;">Usage: 0</span>
+        <span id="healthStatus" class="badge" style="margin-right:8px;">Checking…</span>
+        <button id="logsToggle" class="icon-btn" title="Toggle API call log panel" aria-label="Toggle logs" aria-pressed="false">🧾</button>
       </div>
     </header>
 
@@ -26,7 +29,24 @@
           <div class="controls">
             <input type="text" id="promptName" placeholder="Name to save" />
             <button id="savePromptBtn">Save</button>
-            <button id="setDefaultBtn" title="Set current system prompt as default for new conversations">Set as default</button>
+            <button id="setDefaultBtn" title="Set current system prompt as default for new conversations">Set default</button>
+            <button id="analyzePromptBtn" title="Ask the model to analyze and improve this system prompt">Suggest</button>
+          </div>
+          <div id="promptAnalysisModal" class="modal" style="display:none;">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3>System Prompt Review</h3>
+                <button id="promptAnalysisClose" class="icon-btn" title="Close">×</button>
+              </div>
+              <div id="promptAnalysisBody" class="modal-body">
+                <div class="empty">Preparing…</div>
+              </div>
+              <div class="modal-footer">
+                <button id="applyImprovedPromptBtn" title="Replace the textarea with the improved prompt">Apply</button>
+                <button id="appendImprovedPromptBtn" title="Append improved prompt below current">Insert</button>
+                <button id="copyImprovedPromptBtn" title="Copy improved prompt to clipboard">Copy</button>
+              </div>
+            </div>
           </div>
         </div>
         <div class="section">
@@ -35,17 +55,51 @@
         </div>
         <div class="section">
           <h2>Settings</h2>
-          <label>
-            Model:
-            <select id="modelSelect">
-              <option value="gpt-4o-mini">gpt-4o-mini</option>
-              <option value="gpt-4o">gpt-4o</option>
-              <option value="gpt-4.1-mini">gpt-4.1-mini</option>
-              <option value="gpt-4.1">gpt-4.1</option>
-              <option value="o4-mini">o4-mini</option>
-              <option value="o3-mini">o3-mini</option>
-            </select>
-          </label>
+          <div class="model-picker">
+            <label class="model-label">Model:</label>
+            <div class="model-search-row">
+              <input id="modelSearch" type="text" placeholder="Quick search models…" aria-label="Search models" />
+              <button id="modelSearchClear" class="icon-btn" title="Clear model search" aria-label="Clear model search" style="min-width:36px;">×</button>
+            </div>
+            <select id="modelSelect"></select>
+          </div>
+          <div id="reasoningRow" class="reasoning-row" style="display:none; margin-top:8px;">
+            <label>
+              Reasoning effort:
+              <select id="reasoningSelect">
+                <option value="off">Off</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div class="section" id="dailyConvsSection">
+          <h2 style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+            <span>Daily Conversations</span>
+            <button id="toggleDailyConvs" class="icon-btn" title="Show/Hide" aria-pressed="false">Show</button>
+          </h2>
+          <div id="dailyConvsInner" style="display:none;">
+            <div class="controls" style="margin-top:0; flex-wrap: wrap;">
+              <input type="date" id="convDate" />
+              <input type="text" id="convSearch" placeholder="Search keywords…" />
+              <button id="convSearchClear" class="icon-btn" title="Clear search">×</button>
+            </div>
+            <div class="controls conv-actions" style="margin-top:6px; flex-wrap: wrap;">
+              <div class="left">
+                <label class="chk"><input type="checkbox" id="convSelectAll" /> Select all</label>
+              </div>
+              <div class="right" style="display:flex; gap:8px;">
+                <button id="convImportBtn" title="Import conversations from JSON">Import…</button>
+                <input id="convImportInput" type="file" accept="application/json,.json" style="display:none;" />
+                <button id="convExportBtn" title="Export selected conversations to JSON" disabled>Export selected</button>
+                <button id="convDeleteBtn" title="Delete selected conversations" disabled>Delete selected</button>
+                <button id="convRefreshBtn" title="Refresh list">Refresh</button>
+              </div>
+            </div>
+            <div id="dailyConvsList" class="conv-list"></div>
+          </div>
         </div>
       </section>
 
@@ -58,6 +112,9 @@
           <div class="composer-actions">
             <div class="left-actions">
               <span id="contextInfo" class="badge" title="Messages currently sent as context to the model">Context: 0</span>
+              <button id="attachBtn" class="icon-btn" title="Attach files (text only)">+</button>
+              <input id="fileInput" type="file" multiple style="display:none" />
+              <div id="attachments" class="attachments"></div>
             </div>
             <div class="right-actions">
               <button id="newConvBtn" title="Start a fresh conversation (keeps saved prompts)">New conversation</button>
@@ -67,6 +124,20 @@
             </div>
           </div>
         </div>
+      </section>
+
+      <section class="right-pane">
+        <div class="logs-header">
+          <h2>API Calls</h2>
+          <div class="logs-actions">
+            <div class="logs-filters" title="Filter which calls are shown in the log">
+              <label class="chk" style="user-select:none;"><input type="checkbox" id="logsFilterExternal" /> External</label>
+              <label class="chk" style="user-select:none;"><input type="checkbox" id="logsFilterServer" /> Backend</label>
+            </div>
+            <button id="clearLogsBtn" title="Clear server log buffer">Clear</button>
+          </div>
+        </div>
+        <div id="logsList" class="logs-list"></div>
       </section>
     </main>
   </div>
