@@ -1,0 +1,113 @@
+:root {
+  --bg: #0b0f14;
+  --panel: #121822;
+  --panel-2: #0f1520;
+  --text: #e6edf3;
+  --muted: #9fb0c3;
+  --accent: #4ea1ff;
+  --accent-2: #00c2a8;
+  --border: #1b2430;
+  --danger: #ff5d5d;
+  --topbar-h: 52px;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+  overflow: hidden; /* prevent page scroll; inner panes manage their own */
+}
+
+#app { height: 100vh; display: flex; flex-direction: column; }
+.topbar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  height: var(--topbar-h);
+  padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--panel);
+}
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 700; letter-spacing: 0.5px; }
+.brand-name { display: inline-block; }
+.icon-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 6px 10px; border-radius: 8px; cursor: pointer; }
+.icon-btn:hover { border-color: var(--accent); color: var(--text); }
+.badge { background: var(--panel-2); border: 1px solid var(--border); padding: 4px 8px; border-radius: 999px; color: var(--muted); }
+
+.layout { flex: 1; display: grid; grid-template-columns: 320px 1fr; gap: 0; height: calc(100vh - var(--topbar-h)); overflow: hidden; }
+.left-pane { border-right: 1px solid var(--border); background: var(--panel-2); padding: 12px; overflow: auto; }
+.chat-pane { display: flex; flex-direction: column; height: 100%; }
+
+/* Sidebar hidden state */
+.sidebar-hidden .layout { grid-template-columns: 1fr; }
+.sidebar-hidden .left-pane { display: none; }
+
+.section { margin-bottom: 16px; }
+.section h2 { margin: 8px 0; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.section textarea { width: 100%; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px; resize: vertical; }
+.controls { margin-top: 8px; display: flex; gap: 8px; }
+.controls input { flex: 1; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
+.controls button { background: var(--accent); border: none; color: #001; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+.controls button:hover { filter: brightness(1.1); }
+
+.prompt-list { display: flex; flex-direction: column; gap: 6px; }
+.prompt-item { display: flex; gap: 8px; align-items: center; background: var(--panel); border: 1px solid var(--border); padding: 8px; border-radius: 8px; }
+.prompt-item .name { flex: 1; font-weight: 600; }
+.prompt-item .actions { display: flex; gap: 6px; }
+.prompt-item button { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 6px 8px; border-radius: 6px; cursor: pointer; }
+.prompt-item button:hover { border-color: var(--accent); color: var(--text); }
+
+.messages { flex: 1; overflow: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.msg { display: flex; gap: 10px; }
+.msg .role { width: 70px; text-transform: uppercase; color: var(--muted); font-size: 12px; }
+.msg .bubble { flex: 1; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 10px; white-space: pre-wrap; }
+.msg.user .bubble { border-color: rgba(78,161,255,0.35); }
+.msg.assistant .bubble { border-color: rgba(0,194,168,0.35); }
+
+.composer { border-top: 1px solid var(--border); padding: 10px; background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.15)); }
+.composer-row { display: flex; }
+#userInput { flex: 1; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 10px; resize: vertical; min-height: 44px; }
+.composer-actions { display: flex; gap: 8px; margin-top: 8px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+.composer-actions .right-actions { display: flex; gap: 8px; }
+#sendBtn { background: var(--accent-2); border: none; color: #001; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; }
+#clearContextBtn, #saveConvBtn, #newConvBtn, #setDefaultBtn { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+#clearContextBtn:hover { border-color: var(--danger); color: var(--danger); }
+
+.empty { color: var(--muted); text-align: center; margin-top: 24px; }
+.loading { opacity: 0.7; }
+.error { color: var(--danger); }
+
+.divider { text-align: center; color: var(--muted); font-size: 12px; margin: 6px 0; position: relative; }
+.divider::before, .divider::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: var(--border); }
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+/** Markdown rendering inside assistant bubbles **/
+.msg .bubble.markdown {
+  white-space: normal;
+}
+.msg .bubble.markdown p { margin: 0.4em 0; }
+.msg .bubble.markdown h1,
+.msg .bubble.markdown h2,
+.msg .bubble.markdown h3,
+.msg .bubble.markdown h4,
+.msg .bubble.markdown h5,
+.msg .bubble.markdown h6 { margin: 0.8em 0 0.4em; line-height: 1.25; }
+.msg .bubble.markdown ul,
+.msg .bubble.markdown ol { margin: 0.4em 0 0.4em 1.4em; }
+.msg .bubble.markdown li { margin: 0.2em 0; }
+.msg .bubble.markdown blockquote {
+  margin: 0.6em 0; padding: 0.4em 0.8em; border-left: 3px solid var(--border); color: var(--muted);
+}
+.msg .bubble.markdown code {
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.3em; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+.msg .bubble.markdown pre {
+  background: #0a0f15; border: 1px solid var(--border); border-radius: 8px; padding: 10px; overflow: auto;
+}
+.msg .bubble.markdown pre code {
+  background: transparent; border: none; padding: 0; display: block; font-size: 12px;
+}
+.msg .bubble.markdown table { border-collapse: collapse; margin: 0.6em 0; }
+.msg .bubble.markdown th, .msg .bubble.markdown td { border: 1px solid var(--border); padding: 6px 8px; }
+.msg .bubble.markdown a { color: var(--accent); text-decoration: underline; }

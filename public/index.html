@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LCGPT — Local Context Chat</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <button id="sidebarToggle" class="icon-btn" title="Toggle sidebar" aria-label="Toggle sidebar" aria-pressed="false">☰</button>
+        <span class="brand-name">LCGPT</span>
+      </div>
+      <div class="status">
+        <span id="healthStatus" class="badge">Checking…</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="left-pane">
+        <div class="section">
+          <h2>System Prompt</h2>
+          <textarea id="systemPrompt" rows="8" placeholder="Enter a system prompt to steer the assistant..."></textarea>
+          <div class="controls">
+            <input type="text" id="promptName" placeholder="Name to save" />
+            <button id="savePromptBtn">Save</button>
+            <button id="setDefaultBtn" title="Set current system prompt as default for new conversations">Set as default</button>
+          </div>
+        </div>
+        <div class="section">
+          <h2>Saved Prompts</h2>
+          <div id="promptsList" class="prompt-list"></div>
+        </div>
+        <div class="section">
+          <h2>Settings</h2>
+          <label>
+            Model:
+            <select id="modelSelect">
+              <option value="gpt-4o-mini">gpt-4o-mini</option>
+              <option value="gpt-4o">gpt-4o</option>
+              <option value="gpt-4.1-mini">gpt-4.1-mini</option>
+              <option value="gpt-4.1">gpt-4.1</option>
+              <option value="o4-mini">o4-mini</option>
+              <option value="o3-mini">o3-mini</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="chat-pane">
+        <div id="messages" class="messages"></div>
+        <div class="composer">
+          <div class="composer-row">
+            <textarea id="userInput" rows="2" placeholder="Type your message. Shift+Enter for newline..."></textarea>
+          </div>
+          <div class="composer-actions">
+            <div class="left-actions">
+              <span id="contextInfo" class="badge" title="Messages currently sent as context to the model">Context: 0</span>
+            </div>
+            <div class="right-actions">
+              <button id="newConvBtn" title="Start a fresh conversation (keeps saved prompts)">New conversation</button>
+              <button id="saveConvBtn" title="Save this conversation to disk">Save conversation</button>
+              <button id="clearContextBtn" title="Stop sending previous messages as context (keeps transcript visible)">Clear context</button>
+              <button id="sendBtn">Send</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
