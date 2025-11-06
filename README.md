@@ -1,5 +1,7 @@
 ### LCGPT — Local Context-Resettable GPT Chat
 
+**Disclaimer: this is built with Junie PRO - use at your own risk**
+
 A tiny local web app to chat with OpenAI models while keeping conversations snappy. It lets you:
 - Send only the current conversation context to the model (no hidden long-thread baggage)
 - Instantly clear context with a button (now separates transcript vs. context)
